@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	radix "github.com/armon/go-radix"
 	"github.com/x-mod/dir"
 )
 
@@ -20,6 +21,7 @@ type Template struct {
 	dir        string
 	root       *dir.Dir
 	nameByPath bool
+	rtree      *radix.Tree
 	*template.Template
 }
 
@@ -64,14 +66,32 @@ func NameByPath(flag bool) Option {
 
 func New(opts ...Option) *Template {
 	t := &Template{
-		dir: ".",
-		ext: ".tpl",
-		fns: make(map[string]interface{}),
+		dir:   ".",
+		ext:   ".tpl",
+		fns:   make(map[string]interface{}),
+		rtree: radix.New(),
 	}
 	for _, opt := range opts {
 		opt(t)
 	}
 	return t
+}
+
+func (t *Template) Find(uri string) (string, error) {
+	dst := strings.TrimPrefix(uri, "/")
+	if dst == "" {
+		return "index", nil
+	}
+	if name, _, ok := t.rtree.LongestPrefix(dst); ok {
+		return name, nil
+	}
+	return "", fmt.Errorf("<%s> not matched", uri)
+}
+
+func (t *Template) AddFunc(name string, fn interface{}) {
+	t.Template.Funcs(map[string]interface{}{
+		name: fn,
+	})
 }
 
 func (t *Template) Open() error {
@@ -125,6 +145,7 @@ func (t *Template) Open() error {
 		if _, err := t.Template.New(name).Parse(string(bytes)); err != nil {
 			return fmt.Errorf("template parse <%s> : %w", file, err)
 		}
+		t.rtree.Insert(name, struct{}{})
 	}
 
 	return nil
