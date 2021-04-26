@@ -13,8 +13,6 @@ func TestTemplate_Open(t *testing.T) {
 	tpl := New(
 		Dir("./testdata"),
 		NameByPath(true),
-		Function("date", ChineseDate),
-		Function("rmb", RMB),
 	)
 	assert.Nil(t, tpl.Open())
 	assert.NotNil(t, tpl.Lookup("a"))

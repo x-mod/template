@@ -1,3 +1,3 @@
 A
-{{date .Now}}
-{{rmb .Money}}
+{{chineseDate .Now}}
+{{RMB .Money}}

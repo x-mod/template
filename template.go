@@ -74,6 +74,9 @@ func New(opts ...Option) *Template {
 	for _, opt := range opts {
 		opt(t)
 	}
+	//default
+	Function("RMB", RMB)(t)
+	Function("chineseDate", ChineseDate)(t)
 	return t
 }
 
