@@ -12,7 +12,11 @@ import (
 func TestTemplate_Open(t *testing.T) {
 	tpl := New(
 		Dir("./testdata"),
+		Extension(".html"),
 		NameByPath(true),
+		Function("Hello", func() string {
+			return "Hello Template!"
+		}),
 	)
 	assert.Nil(t, tpl.Open())
 	assert.NotNil(t, tpl.Lookup("a"))
@@ -33,7 +37,7 @@ func TestTemplate_Open(t *testing.T) {
 	assert.Equal(t, name2, "404")
 
 	b := bytes.NewBufferString("")
-	err3 := tpl.ExecuteTemplate(b, "a", map[string]interface{}{
+	err3 := tpl.ExecuteTemplate(b, "sub/c", map[string]interface{}{
 		"Now":   time.Now(),
 		"Money": 10.58,
 	})

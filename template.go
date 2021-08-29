@@ -145,7 +145,9 @@ func (t *Template) Open() error {
 		if err != nil {
 			return err
 		}
-		if _, err := t.Template.New(name).Parse(string(bytes)); err != nil {
+		sub := t.Template.New(name)
+		// sub.Funcs(t.fns)
+		if _, err := sub.Parse(string(bytes)); err != nil {
 			return fmt.Errorf("template parse <%s> : %w", file, err)
 		}
 		t.rtree.Insert(name, struct{}{})
