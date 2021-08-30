@@ -75,6 +75,7 @@ func New(opts ...Option) *Template {
 		opt(t)
 	}
 	//default
+	Function("JS", Javascript)(t)
 	Function("RMB", RMB)(t)
 	Function("chineseDate", ChineseDate)(t)
 	return t
